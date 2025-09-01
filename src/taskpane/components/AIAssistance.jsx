@@ -6,11 +6,11 @@ import {
   Textarea, 
   tokens, 
   makeStyles, 
-  Select,
-  Option,
   Input,
   Spinner,
-  Image
+  Checkbox,
+  Radio,
+  RadioGroup,
 } from "@fluentui/react-components";
 import PropTypes from "prop-types";
 import { insertText } from "../taskpane";
@@ -29,7 +29,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     padding: "20px",
-    background: "linear-gradient(135deg, #107C10 0%, #27AE27 100%)",
+    background: "linear-gradient(135deg, #ef4444 0%, #FF6B33 100%)",
     color: "white",
     position: "relative",
   },
@@ -66,11 +66,8 @@ const useStyles = makeStyles({
   mainContent: {
     padding: "20px",
     display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    gridTemplateColumns: "1fr",
     gap: "20px",
-    "@media (max-width: 768px)": {
-      gridTemplateColumns: "1fr",
-    },
     position: "relative",
     zIndex: 2,
   },
@@ -82,6 +79,7 @@ const useStyles = makeStyles({
     transition: "transform 0.2s, box-shadow 0.2s",
     position: "relative",
     zIndex: 3,
+    marginBottom: "20px",
     ":hover": {
       transform: "translateY(-2px)",
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
@@ -90,7 +88,7 @@ const useStyles = makeStyles({
   featureTitle: {
     fontSize: "18px",
     marginBottom: "15px",
-    color: "#107C10",
+    color: "#ef4444",
     display: "flex",
     alignItems: "center",
   },
@@ -112,37 +110,22 @@ const useStyles = makeStyles({
     minHeight: "100px",
     ":focus": {
       outline: "none",
-      borderColor: "#107C10",
+      borderColor: "#ef4444",
       boxShadow: "0 0 0 3px rgba(16, 124, 16, 0.2)",
     },
-  },
-  selectContainer: {
-    position: "relative",
-    marginBottom: "15px",
-    zIndex: 1000,
-  },
-  selectField: {
-    width: "100%",
-    padding: "10px",
-    border: "1px solid #e5e7eb",
-    borderRadius: "6px",
-    fontSize: "14px",
-    backgroundColor: "white",
-    position: "relative",
-    zIndex: 1001,
   },
   outputSection: {
     marginTop: "20px",
     padding: "15px",
     background: "#f9fafb",
     borderRadius: "6px",
-    borderLeft: "4px solid #107C10",
+    borderLeft: "4px solid #ef4444",
     position: "relative",
     zIndex: 1,
   },
   outputTitle: {
     marginBottom: "10px",
-    color: "#107C10",
+    color: "#ef4444",
   },
   outputContent: {
     background: "white",
@@ -152,6 +135,7 @@ const useStyles = makeStyles({
     minHeight: "100px",
     maxHeight: "200px",
     overflowY: "auto",
+    fontFamily: "monospace",
   },
   buttonGroup: {
     marginTop: "10px",
@@ -176,38 +160,97 @@ const useStyles = makeStyles({
     position: "relative",
     zIndex: 1,
   },
+  exampleQueries: {
+    marginTop: "10px",
+    marginBottom: "15px",
+  },
+  exampleQuery: {
+    display: "inline-block",
+    margin: "5px",
+    padding: "8px 12px",
+    background: "#e5e7eb",
+    borderRadius: "16px",
+    fontSize: "12px",
+    color: "#4b5563",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    ":hover": {
+      background: "#d1d5db",
+    },
+  },
+  debugInfo: {
+    marginTop: "10px",
+    padding: "10px",
+    background: "#ffecb3",
+    borderRadius: "4px",
+    border: "1px solid #ffd54f",
+  },
+  optionsGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "10px",
+    marginBottom: "15px",
+  },
+  checkboxGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    marginBottom: "15px",
+  },
+  infoBox: {
+    padding: "10px",
+    background: "#e8f4f8",
+    borderRadius: "4px",
+    marginBottom: "15px",
+    fontSize: "14px",
+    color: "#2c5282",
+  },
+  summaryResult: {
+    background: "#f0fff4",
+    padding: "15px",
+    borderRadius: "4px",
+    border: "1px solid #c6f6d5",
+    marginTop: "15px",
+  },
+  summaryMetric: {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "8px 0",
+    borderBottom: "1px solid #e5e7eb",
+  },
+  summaryMetricLabel: {
+    fontWeight: "500",
+    color: "#4a5568",
+  },
+  summaryMetricValue: {
+    fontWeight: "600",
+    color: "#ef4444",
+  },
 });
-
-const CustomSelect = ({ className, value, onChange, children, ...props }) => {
-  const styles = useStyles();
-  
-  return (
-    <div className={styles.selectContainer}>
-      <Select
-        className={`${styles.selectField} ${className}`}
-        value={value}
-        onChange={onChange}
-        {...props}
-      >
-        {children}
-      </Select>
-    </div>
-  );
-};
 
 const AIAssistance = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeFeature, setActiveFeature] = useState(null);
-  const [prompt, setPrompt] = useState("");
-  const [dataToAnalyze, setDataToAnalyze] = useState("");
+  const [naturalLanguageQuery, setNaturalLanguageQuery] = useState("");
   const [formulaToExplain, setFormulaToExplain] = useState("");
-  const [analysisType, setAnalysisType] = useState("");
-  const [dataFormat, setDataFormat] = useState("");
-  const [insightLevel, setInsightLevel] = useState("");
-  const [generatedContent, setGeneratedContent] = useState("");
-  const [analysisResults, setAnalysisResults] = useState("");
+  const [generatedFormula, setGeneratedFormula] = useState("");
   const [formulaExplanation, setFormulaExplanation] = useState("");
-  const [recommendations, setRecommendations] = useState([]);
+  const [formulaDebugging, setFormulaDebugging] = useState("");
+  
+  // Data Cleaning states
+  const [cleaningOptions, setCleaningOptions] = useState({
+    removeDuplicates: true,
+    fillMissingValues: true,
+    standardizeDates: false,
+    standardizeNumbers: false,
+    trimWhitespace: true,
+    fixCapitalization: false,
+  });
+  const [cleaningResult, setCleaningResult] = useState("");
+  
+  // Data Summarization states
+  const [summarizationRange, setSummarizationRange] = useState("current");
+  const [dataSummary, setDataSummary] = useState("");
 
   const styles = useStyles();
 
@@ -217,40 +260,139 @@ const AIAssistance = () => {
     window.location.reload();
   };
 
-  const simulateAPICall = () => {
+  // Placeholder for AI API call
+  const simulateAICall = (prompt, type) => {
     return new Promise(resolve => {
       setTimeout(() => {
-        resolve(true);
+        // Placeholder responses based on type
+        if (type === "formula") {
+          // Natural language to formula conversion
+          let formula = "";
+          
+          if (prompt.toLowerCase().includes("average") && prompt.toLowerCase().includes("january")) {
+            formula = "=AVERAGEIF(A2:A100,\"January\",B2:B100)";
+          } else if (prompt.toLowerCase().includes("sum") && prompt.toLowerCase().includes("sales")) {
+            formula = "=SUM(B2:B100)";
+          } else if (prompt.toLowerCase().includes("count") && prompt.toLowerCase().includes("products")) {
+            formula = "=COUNTIF(C2:C100,\"Product\")";
+          } else if (prompt.toLowerCase().includes("max") || prompt.toLowerCase().includes("highest")) {
+            formula = "=MAX(B2:B100)";
+          } else if (prompt.toLowerCase().includes("min") || prompt.toLowerCase().includes("lowest")) {
+            formula = "=MIN(B2:B100)";
+          } else {
+            formula = "=FORMULA_PLACEHOLDER(A1:Z100)";
+          }
+          
+          resolve(formula);
+        } else if (type === "explain") {
+          // Formula explanation
+          let explanation = "This formula ";
+          
+          if (prompt.includes("AVERAGE")) {
+            explanation += "calculates the average of values in the specified range.";
+          } else if (prompt.includes("SUM")) {
+            explanation += "adds up all the values in the specified range.";
+          } else if (prompt.includes("COUNT")) {
+            explanation += "counts the number of cells that meet the specified criteria.";
+          } else if (prompt.includes("MAX")) {
+            explanation += "finds the maximum value in the specified range.";
+          } else if (prompt.includes("MIN")) {
+            explanation += "finds the minimum value in the specified range.";
+          } else {
+            explanation += "performs a calculation on the specified range.";
+          }
+          
+          resolve({ explanation });
+        } else if (type === "debug") {
+          // Formula debugging
+          let debugging = "";
+          
+          if (prompt.includes("#REF!")) {
+            debugging = "Error: The formula contains an invalid cell reference. This might be because the cells you're referring to have been deleted.";
+          } else if (prompt.includes("#VALUE!")) {
+            debugging = "Error: The formula is using values of the wrong type. Check that all references contain numeric values when needed.";
+          } else if (prompt.includes("#DIV/0!")) {
+            debugging = "Error: The formula is attempting to divide by zero. Consider adding an IF statement to handle this case.";
+          } else if (prompt.includes("#NAME?")) {
+            debugging = "Error: The formula contains an unrecognized function name or range name. Check for typos.";
+          } else if (prompt.includes("#NULL!")) {
+            debugging = "Error: The formula uses an intersection of two ranges that don't intersect.";
+          } else if (prompt.includes(",") && !prompt.includes(";") && prompt.includes(";") && !prompt.includes(",")) {
+            debugging = "Warning: Your formula might be using the wrong delimiter for your Excel's regional settings.";
+          } else if (prompt.includes("(") && !prompt.includes(")")) {
+            debugging = "Error: Missing closing parenthesis in the formula.";
+          } else {
+            debugging = "No obvious errors detected. The formula appears to be syntactically correct.";
+          }
+          
+          resolve({ debugging });
+        } else if (type === "clean") {
+          // Data cleaning
+          const options = prompt;
+          let result = "Data Cleaning Results:\n\n";
+          
+          if (options.removeDuplicates) {
+            result += "• Removed 12 duplicate rows\n";
+          }
+          
+          if (options.fillMissingValues) {
+            result += "• Filled 8 missing values with appropriate data\n";
+          }
+          
+          if (options.standardizeDates) {
+            result += "• Standardized 15 date values to MM/DD/YYYY format\n";
+          }
+          
+          if (options.standardizeNumbers) {
+            result += "• Standardized 10 number formats (currency, percentages, etc.)\n";
+          }
+          
+          if (options.trimWhitespace) {
+            result += "• Trimmed unnecessary whitespace from 24 cells\n";
+          }
+          
+          if (options.fixCapitalization) {
+            result += "• Fixed capitalization in 18 text entries\n";
+          }
+          
+          result += "\nCleaning complete! Your data is now consistent and ready for analysis.";
+          
+          resolve(result);
+        } else if (type === "summarize") {
+          // Data summarization
+          const range = prompt;
+          let summary = "";
+          
+          if (range === "current") {
+            summary = "Data Summary:\n\n• Total sales: ₹2.3M\n• Highest in March (₹320K)\n• Lowest in July (₹98K)\n• Average monthly sales: ₹191.7K\n• Year-over-year growth: +12.4%\n• Top product category: Electronics (42% of sales)\n• Underperforming region: South (18% below target)";
+          } else if (range === "selection") {
+            summary = "Selection Summary:\n\n• 24 data points analyzed\n• Sum: ₹845K\n• Average: ₹35.2K\n• Median: ₹28.7K\n• Maximum: ₹112K (Row 14)\n• Minimum: ₹8.2K (Row 7)\n• Standard Deviation: ₹24.6K";
+          } else if (range === "sheet") {
+            summary = "Sheet Summary:\n\n• 120 rows of data analyzed\n• Total revenue: ₹4.8M\n• Profit margin: 22.4%\n• Best performing product: Product X (₹720K)\n• Customer segments: Enterprise (65%), SMB (25%), Consumer (10%)\n• Growth trend: Positive (+8.2% quarterly)";
+          }
+          
+          resolve(summary);
+        }
       }, 1500);
     });
   };
 
-  const handleGenerateContent = async () => {
-    if (!prompt) return;
+  const handleNaturalLanguageToFormula = async () => {
+    if (!naturalLanguageQuery) return;
     
     setIsLoading(true);
-    setActiveFeature("generate");
+    setActiveFeature("formula");
     
-    await simulateAPICall();
-    
-    const content = `Based on your request about "${prompt}", here's a comprehensive analysis:\n\n• Key insights and trends related to your topic\n• Potential data patterns and correlations\n• Recommended Excel formulas for analysis\n• Visualization suggestions for better data presentation\n• Actionable recommendations for decision-making`;
-    
-    setGeneratedContent(content);
-    setIsLoading(false);
-  };
-
-  const handleAnalyzeData = async () => {
-    if (!dataToAnalyze) return;
-    
-    setIsLoading(true);
-    setActiveFeature("analyze");
-    
-    await simulateAPICall();
-    
-    const analysis = `Data Analysis Results:\n\n• Dataset contains ${Math.floor(dataToAnalyze.length / 10)} potential data points\n• Detected patterns suggest seasonal trends\n• Correlation coefficient: 0.${Math.floor(Math.random() * 8) + 2}\n• Recommended visualizations: Line chart, Scatter plot\n• Key insights: Data shows strong upward trend with periodic fluctuations`;
-    
-    setAnalysisResults(analysis);
-    setIsLoading(false);
+    try {
+      // This would be replaced with an actual AI API call
+      const formula = await simulateAICall(naturalLanguageQuery, "formula");
+      setGeneratedFormula(formula);
+    } catch (error) {
+      console.error("Error generating formula:", error);
+      setGeneratedFormula("Error generating formula. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleExplainFormula = async () => {
@@ -259,30 +401,53 @@ const AIAssistance = () => {
     setIsLoading(true);
     setActiveFeature("explain");
     
-    await simulateAPICall();
-    
-    const explanation = `Formula Explanation: ${formulaToExplain}\n\n• Purpose: This formula calculates ${Math.random() > 0.5 ? 'aggregate values' : 'specific metrics'} based on your data\n• Components: Includes ${Math.floor(Math.random() * 5) + 2} functions working together\n• Usage: Best applied to ${Math.random() > 0.5 ? 'financial data' : 'operational metrics'}\n• Tips: Use with absolute references for consistent results across cells`;
-    
-    setFormulaExplanation(explanation);
-    setIsLoading(false);
+    try {
+      // This would be replaced with an actual AI API call
+      const { explanation, debugging } = await simulateAICall(formulaToExplain, "explain");
+      setFormulaExplanation(explanation);
+      
+      // Also check for potential issues with the formula
+      const debugInfo = await simulateAICall(formulaToExplain, "debug");
+      setFormulaDebugging(debugInfo.debugging);
+    } catch (error) {
+      console.error("Error explaining formula:", error);
+      setFormulaExplanation("Error explaining formula. Please try again.");
+      setFormulaDebugging("");
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  const handleGetRecommendations = async () => {
+  
+  const handleCleanData = async () => {
     setIsLoading(true);
-    setActiveFeature("recommend");
+    setActiveFeature("clean");
     
-    await simulateAPICall();
+    try {
+      // This would be replaced with an actual AI API call
+      const result = await simulateAICall(cleaningOptions, "clean");
+      setCleaningResult(result);
+    } catch (error) {
+      console.error("Error cleaning data:", error);
+      setCleaningResult("Error cleaning data. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleSummarizeData = async () => {
+    setIsLoading(true);
+    setActiveFeature("summarize");
     
-    const mockRecommendations = [
-      "Consider using PivotTables for better data summarization",
-      "Implement data validation rules to maintain data integrity",
-      "Use conditional formatting to highlight key metrics",
-      "Create dynamic charts that update with new data automatically",
-      "Set up named ranges for easier formula management"
-    ];
-    
-    setRecommendations(mockRecommendations);
-    setIsLoading(false);
+    try {
+      // This would be replaced with an actual AI API call
+      const summary = await simulateAICall(summarizationRange, "summarize");
+      setDataSummary(summary);
+    } catch (error) {
+      console.error("Error summarizing data:", error);
+      setDataSummary("Error summarizing data. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const insertIntoExcel = (content) => {
@@ -291,10 +456,24 @@ const AIAssistance = () => {
     }
   };
 
-  const regenerateContent = () => {
-    setGeneratedContent("");
-    handleGenerateContent();
+  const handleExampleClick = (example) => {
+    setNaturalLanguageQuery(example);
   };
+  
+  const handleCleaningOptionChange = (option) => {
+    setCleaningOptions({
+      ...cleaningOptions,
+      [option]: !cleaningOptions[option],
+    });
+  };
+
+  const exampleQueries = [
+    "Find average sales for January",
+    "Sum total revenue for Q1",
+    "Count products sold in December",
+    "Find highest sales value",
+    "Calculate growth percentage"
+  ];
 
   return (
     <div className={styles.container}>
@@ -315,192 +494,214 @@ const AIAssistance = () => {
       </div>
       
       <div className={styles.mainContent}>
-        {/* Generate Insights Section */}
+        {/* Natural Language to Formula Section */}
         <div className={styles.aiFeature}>
           <h3 className={styles.featureTitle}>
-            <span className={styles.featureIcon}>✨</span>
-            Generate Insights
+            <span className={styles.featureIcon}>🔄</span>
+            Natural Language to Formula
           </h3>
           <p className={styles.featureDescription}>
-            Get AI-powered analysis and recommendations for your data.
+            Describe what you want to calculate in plain English, and get the Excel formula.
           </p>
+          
+          <div className={styles.exampleQueries}>
+            <p style={{ marginBottom: "8px", fontSize: "14px", color: "#6b7280" }}>Try these examples:</p>
+            {exampleQueries.map((query, index) => (
+              <span 
+                key={index} 
+                className={styles.exampleQuery}
+                onClick={() => handleExampleClick(query)}
+              >
+                {query}
+              </span>
+            ))}
+          </div>
+          
           <Input
             className={styles.inputField}
             style={{ minHeight: "auto" }}
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Describe your data or analysis needs..."
+            value={naturalLanguageQuery}
+            onChange={(e) => setNaturalLanguageQuery(e.target.value)}
+            placeholder="E.g., Find average sales for January"
           />
-          
-          <CustomSelect
-            value={analysisType}
-            onChange={(e, data) => setAnalysisType(data.value)}
-          >
-            <Option value="">Select analysis type</Option>
-            <Option value="trend">Trend Analysis</Option>
-            <Option value="financial">Financial Analysis</Option>
-            <Option value="statistical">Statistical Analysis</Option>
-            <Option value="predictive">Predictive Modeling</Option>
-            <Option value="comparative">Comparative Analysis</Option>
-            <Option value="visualization">Data Visualization</Option>
-            <Option value="optimization">Optimization</Option>
-          </CustomSelect>
-          
-          <CustomSelect
-            value={dataFormat}
-            onChange={(e, data) => setDataFormat(data.value)}
-          >
-            <Option value="">Data format</Option>
-            <Option value="tabular">Tabular Data</Option>
-            <Option value="time-series">Time Series</Option>
-            <Option value="categorical">Categorical Data</Option>
-            <Option value="numerical">Numerical Data</Option>
-            <Option value="mixed">Mixed Data Types</Option>
-          </CustomSelect>
           
           <Button 
             appearance="primary" 
-            onClick={handleGenerateContent}
-            disabled={isLoading || !prompt}
+            onClick={handleNaturalLanguageToFormula}
+            disabled={isLoading || !naturalLanguageQuery}
+            style={{backgroundColor:naturalLanguageQuery?"#ef4444":""}}
           >
-            Generate Insights
+            Generate Formula
           </Button>
 
-          {generatedContent && activeFeature === "generate" && (
+          {generatedFormula && activeFeature === "formula" && (
             <div className={styles.outputSection}>
-              <h4 className={styles.outputTitle}>Generated Insights</h4>
-              <div className={styles.outputContent}>{generatedContent}</div>
+              <h4 className={styles.outputTitle}>Generated Formula</h4>
+              <div className={styles.outputContent}>{generatedFormula}</div>
               <div className={styles.buttonGroup}>
-                <Button appearance="primary" onClick={() => insertIntoExcel(generatedContent)}>
+                <Button appearance="primary" style={{backgroundColor:"#ef4444"}} onClick={() => insertIntoExcel(generatedFormula)}>
                   Insert into Excel
-                </Button>
-                <Button appearance="secondary" onClick={regenerateContent}>
-                  Regenerate
                 </Button>
               </div>
             </div>
           )}
         </div>
         
-        {/* Data Analysis Section */}
-        <div className={styles.aiFeature}>
-          <h3 className={styles.featureTitle}>
-            <span className={styles.featureIcon}>📊</span>
-            Analyze Data
-          </h3>
-          <p className={styles.featureDescription}>
-            Paste your data for comprehensive analysis and pattern detection.
-          </p>
-          <Textarea
-            className={styles.inputField}
-            value={dataToAnalyze}
-            onChange={(e) => setDataToAnalyze(e.target.value)}
-            placeholder="Paste your data here (CSV, table, or description)..."
-          />
-          
-          <CustomSelect
-            value={insightLevel}
-            onChange={(e, data) => setInsightLevel(data.value)}
-          >
-            <Option value="">Insight depth</Option>
-            <Option value="basic">Basic Overview</Option>
-            <Option value="detailed">Detailed Analysis</Option>
-            <Option value="comprehensive">Comprehensive Report</Option>
-            <Option value="executive">Executive Summary</Option>
-          </CustomSelect>
-          
-          <Button 
-            appearance="primary" 
-            onClick={handleAnalyzeData}
-            disabled={isLoading || !dataToAnalyze}
-          >
-            Analyze Data
-          </Button>
-
-          {analysisResults && activeFeature === "analyze" && (
-            <div className={styles.outputSection}>
-              <h4 className={styles.outputTitle}>Analysis Results</h4>
-              <div className={styles.outputContent}>{analysisResults}</div>
-              <div className={styles.buttonGroup}>
-                <Button appearance="primary" onClick={() => insertIntoExcel(analysisResults)}>
-                  Insert Analysis
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Formula Explanation Section */}
+        {/* Formula Explanation & Debugging Section */}
         <div className={styles.aiFeature}>
           <h3 className={styles.featureTitle}>
             <span className={styles.featureIcon}>🧮</span>
-            Formula Assistant
+            Formula Explanation & Debugging
           </h3>
           <p className={styles.featureDescription}>
-            Get explanations and improvements for your Excel formulas.
+            Paste an Excel formula to get a plain English explanation and debugging suggestions.
           </p>
           <Input
             className={styles.inputField}
             style={{ minHeight: "auto" }}
             value={formulaToExplain}
             onChange={(e) => setFormulaToExplain(e.target.value)}
-            placeholder="Enter Excel formula to explain or optimize..."
+            placeholder="E.g., =SUMIFS(B2:B100,A2:A100,\January\,C2:C100,\Sales\)"
           />
           
           <Button 
             appearance="primary" 
             onClick={handleExplainFormula}
             disabled={isLoading || !formulaToExplain}
+            style={{backgroundColor:formulaToExplain?"#ef4444":""}}
           >
-            Explain Formula
+            Explain & Debug Formula
           </Button>
 
           {formulaExplanation && activeFeature === "explain" && (
             <div className={styles.outputSection}>
               <h4 className={styles.outputTitle}>Formula Explanation</h4>
               <div className={styles.outputContent}>{formulaExplanation}</div>
+              
+              {formulaDebugging && (
+                <div className={styles.debugInfo}>
+                  <strong>Debugging Suggestions:</strong>
+                  <p>{formulaDebugging}</p>
+                </div>
+              )}
+              
               <div className={styles.buttonGroup}>
-                <Button appearance="primary" onClick={() => insertIntoExcel(formulaExplanation)}>
+                <Button appearance="primary" style={{backgroundColor:"#ef4444"}} onClick={() => insertIntoExcel(formulaExplanation + (formulaDebugging ? "\n\nDebugging Suggestions:\n" + formulaDebugging : ""))}>
                   Insert Explanation
                 </Button>
               </div>
             </div>
           )}
         </div>
-
-        {/* Excel Recommendations Section */}
+        
+        {/* Smart Data Cleaning Section */}
         <div className={styles.aiFeature}>
           <h3 className={styles.featureTitle}>
-            <span className={styles.featureIcon}>🚀</span>
-            Excel Optimization
+            <span className={styles.featureIcon}>🧹</span>
+            Smart Data Cleaning
           </h3>
           <p className={styles.featureDescription}>
-            Get personalized recommendations to optimize your Excel workflow.
+            Clean and standardize your data with one click. Select the operations you want to perform.
           </p>
-          <div style={{ textAlign: "center", padding: "30px 0" }}>
-            <p>Discover ways to improve your spreadsheet efficiency and accuracy.</p>
-            <Button
-              appearance="primary"
-              onClick={handleGetRecommendations}
-              disabled={isLoading}
-            >
-              Get Recommendations
-            </Button>
+          
+          <div className={styles.infoBox}>
+            First select your data in Excel, then choose cleaning options below.
           </div>
+          
+          <div className={styles.checkboxGroup}>
+            <Checkbox 
+              label="Remove duplicates" 
+              checked={cleaningOptions.removeDuplicates}
+              onChange={() => handleCleaningOptionChange('removeDuplicates')}
+            />
+            <Checkbox 
+              label="Fill missing values" 
+              checked={cleaningOptions.fillMissingValues}
+              onChange={() => handleCleaningOptionChange('fillMissingValues')}
+            />
+            <Checkbox 
+              label="Standardize dates" 
+              checked={cleaningOptions.standardizeDates}
+              onChange={() => handleCleaningOptionChange('standardizeDates')}
+            />
+            <Checkbox 
+              label="Standardize numbers" 
+              checked={cleaningOptions.standardizeNumbers}
+              onChange={() => handleCleaningOptionChange('standardizeNumbers')}
+            />
+            <Checkbox 
+              label="Trim whitespace" 
+              checked={cleaningOptions.trimWhitespace}
+              onChange={() => handleCleaningOptionChange('trimWhitespace')}
+            />
+            <Checkbox 
+              label="Fix capitalization" 
+              checked={cleaningOptions.fixCapitalization}
+              onChange={() => handleCleaningOptionChange('fixCapitalization')}
+            />
+          </div>
+          
+          <Button 
+            appearance="primary" 
+            onClick={handleCleanData}
+            style={{backgroundColor:"#ef4444"}}
+            disabled={isLoading || Object.values(cleaningOptions).every(option => !option)}
+          >
+            Clean Data
+          </Button>
 
-          {recommendations.length > 0 && activeFeature === "recommend" && (
+          {cleaningResult && activeFeature === "clean" && (
             <div className={styles.outputSection}>
-              <h4 className={styles.outputTitle}>Optimization Tips</h4>
-              <div className={styles.outputContent}>
-                <ul>
-                  {recommendations.map((rec, index) => (
-                    <li key={index}>{rec}</li>
-                  ))}
-                </ul>
-              </div>
+              <h4 className={styles.outputTitle}>Cleaning Results</h4>
+              <div className={styles.outputContent}>{cleaningResult}</div>
               <div className={styles.buttonGroup}>
-                <Button appearance="primary" onClick={() => insertIntoExcel(recommendations.join('\n• '))}>
-                  Insert Recommendations
+                <Button appearance="primary" style={{backgroundColor:"#ef4444"}} onClick={() => insertIntoExcel(cleaningResult)}>
+                  Insert Results
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        {/* Data Summarization Section */}
+        <div className={styles.aiFeature}>
+          <h3 className={styles.featureTitle}>
+            <span className={styles.featureIcon}>📊</span>
+            Data Summarization
+          </h3>
+          <p className={styles.featureDescription}>
+            Get a quick summary of your data with key metrics and insights.
+          </p>
+          
+          <div className={styles.infoBox}>
+            Select your data in Excel, then click "Summarize Data" to get insights.
+          </div>
+          
+          <RadioGroup
+            value={summarizationRange}
+            onChange={(e, data) => setSummarizationRange(data.value)}
+          >
+            <Radio value="current" label="Current selection" />
+            <Radio value="selection" label="Active table/range" />
+            <Radio value="sheet" label="Entire worksheet" />
+          </RadioGroup>
+          
+          <Button 
+            appearance="primary" 
+            onClick={handleSummarizeData}
+            disabled={isLoading}
+            style={{ marginTop: "15px", backgroundColor:"#ef4444" }}
+          >
+            Summarize Data
+          </Button>
+
+          {dataSummary && activeFeature === "summarize" && (
+            <div className={styles.outputSection}>
+              <h4 className={styles.outputTitle}>Data Summary</h4>
+              <div className={styles.outputContent}>{dataSummary}</div>
+              <div className={styles.buttonGroup}>
+                <Button appearance="primary" style={{backgroundColor:"#ef4444"}} onClick={() => insertIntoExcel(dataSummary)}>
+                  Insert Summary
                 </Button>
               </div>
             </div>
@@ -510,7 +711,7 @@ const AIAssistance = () => {
 
       {isLoading && (
         <div className={styles.loadingContainer}>
-          <Spinner label="Ana is analyzing your data..." labelPosition="below" />
+          <Spinner label="Ana is analyzing your request..." labelPosition="below" />
         </div>
       )}
 
