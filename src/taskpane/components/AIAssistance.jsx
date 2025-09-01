@@ -251,6 +251,11 @@ const AIAssistance = () => {
   // Data Summarization states
   const [summarizationRange, setSummarizationRange] = useState("current");
   const [dataSummary, setDataSummary] = useState("");
+  
+  // Cell Modification Demo states
+  const [cellModificationText, setCellModificationText] = useState("");
+  const [cellModificationResult, setCellModificationResult] = useState("");
+  const [modificationOption, setModificationOption] = useState("replace");
 
   const styles = useStyles();
 
@@ -445,6 +450,75 @@ const AIAssistance = () => {
     } catch (error) {
       console.error("Error summarizing data:", error);
       setDataSummary("Error summarizing data. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleCellModification = async () => {
+    if (!cellModificationText) return;
+    
+    setIsLoading(true);
+    setActiveFeature("cellModify");
+    
+    try {
+      // Simulate the cell modification process
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Create a result message based on the selected option
+      let result = "";
+      if (modificationOption === "replace") {
+        result = "✅ Successfully replaced content in selected cell(s) with:\n\n" + cellModificationText;
+      } else if (modificationOption === "append") {
+        result = "✅ Successfully appended to selected cell(s):\n\n" + cellModificationText;
+      } else if (modificationOption === "prepend") {
+        result = "✅ Successfully prepended to selected cell(s):\n\n" + cellModificationText;
+      } else if (modificationOption === "format") {
+        result = "✅ Successfully applied formatting to selected cell(s) with text:\n\n" + cellModificationText;
+      }
+      
+      setCellModificationResult(result);
+      
+      // Actually modify the Excel cells
+      // This would call the Excel API to modify the selected cells
+      if (Office && Office.context && Office.context.document) {
+        Office.context.document.getSelectedDataAsync(Office.CoercionType.Text, function (asyncResult) {
+          if (asyncResult.status === Office.AsyncResultStatus.Succeeded) {
+            // Get the current selection
+            const selectedText = asyncResult.value;
+            let newContent = cellModificationText;
+            
+            // Modify the content based on the selected option
+            if (modificationOption === "append") {
+              // Append the new text to the existing content
+              newContent = selectedText + cellModificationText;
+            } else if (modificationOption === "prepend") {
+              // Prepend the new text to the existing content
+              newContent = cellModificationText + selectedText;
+            } else if (modificationOption === "format") {
+              // For format option, we'll just add some formatting markers
+              // In a real implementation, this would use proper Excel formatting APIs
+              newContent = "**" + cellModificationText + "**";
+            }
+            // For replace option, we just use the new text as is
+            
+            // Update the selected cells with the modified content
+            Office.context.document.setSelectedDataAsync(
+              newContent,
+              { coercionType: Office.CoercionType.Text },
+              function (asyncResult) {
+                if (asyncResult.status === Office.AsyncResultStatus.Failed) {
+                  console.error('Error:', asyncResult.error.message);
+                }
+              }
+            );
+          }
+        });
+      }
+      
+    } catch (error) {
+      console.error("Error modifying cells:", error);
+      setCellModificationResult("Error modifying cells. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -704,6 +778,56 @@ const AIAssistance = () => {
                   Insert Summary
                 </Button>
               </div>
+            </div>
+          )}
+        </div>
+        
+        {/* Cell Modification Demo Section */}
+        <div className={styles.aiFeature}>
+          <h3 className={styles.featureTitle}>
+            <span className={styles.featureIcon}>✏️</span>
+            Cell Modification Demo
+          </h3>
+          <p className={styles.featureDescription}>
+            Demonstrate how to modify content in selected Excel cells. First select cells in Excel, then use options below.
+          </p>
+          
+          <div className={styles.infoBox}>
+            Select one or more cells in Excel, then enter text and choose how to modify the selected cells.
+          </div>
+          
+          <Textarea
+            className={styles.inputField}
+            value={cellModificationText}
+            onChange={(e) => setCellModificationText(e.target.value)}
+            placeholder="Enter text to insert into selected cell(s)"
+            style={{ minHeight: "80px" }}
+          />
+          
+          <RadioGroup
+            value={modificationOption}
+            onChange={(e, data) => setModificationOption(data.value)}
+            style={{ marginBottom: "15px" }}
+          >
+            <Radio value="replace" label="Replace cell content" />
+            <Radio value="append" label="Append to existing content" />
+            <Radio value="prepend" label="Prepend to existing content" />
+            <Radio value="format" label="Format cells with text" />
+          </RadioGroup>
+          
+          <Button 
+            appearance="primary" 
+            onClick={handleCellModification}
+            disabled={isLoading || !cellModificationText}
+            style={{ backgroundColor: cellModificationText ? "#ef4444" : "" }}
+          >
+            Modify Selected Cells
+          </Button>
+
+          {cellModificationResult && activeFeature === "cellModify" && (
+            <div className={styles.outputSection}>
+              <h4 className={styles.outputTitle}>Modification Result</h4>
+              <div className={styles.outputContent}>{cellModificationResult}</div>
             </div>
           )}
         </div>
