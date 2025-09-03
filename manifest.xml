@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" 
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" 
+           xsi:type="TaskPaneApp">
+
   <Id>9ac93e68-9027-4367-b124-2f5490d8f114</Id>
   <Version>1.0.0.0</Version>
   <ProviderName>Contoso</ProviderName>
@@ -19,6 +24,7 @@
     <SourceLocation DefaultValue="https://localhost:3000/taskpane.html"/>
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
+
   <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
     <Hosts>
       <Host xsi:type="Workbook">
@@ -30,19 +36,24 @@
           </GetStarted>
           <FunctionFile resid="Commands.Url"/>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-            <OfficeTab id="TabHome">
-              <Group id="CommandsGroup">
-                <Label resid="CommandsGroup.Label"/>
+
+            <!-- Custom Tab for Anore -->
+            <CustomTab id="AnoreTab">
+              <Label resid="AnoreTab.Label"/>
+              <Group id="AnoreGroup" label="AI Tools">
+                <Label resid="AnoreGroup.Label"/>
                 <Icon>
                   <bt:Image size="16" resid="Icon.16x16"/>
                   <bt:Image size="32" resid="Icon.32x32"/>
                   <bt:Image size="80" resid="Icon.80x80"/>
                 </Icon>
-                <Control xsi:type="Button" id="TaskpaneButton">
-                  <Label resid="TaskpaneButton.Label"/>
+
+                <!-- Button 1: Login / Connect -->
+                <Control xsi:type="Button" id="btnLogin">
+                  <Label resid="btnLogin.Label"/>
                   <Supertip>
-                    <Title resid="TaskpaneButton.Label"/>
-                    <Description resid="TaskpaneButton.Tooltip"/>
+                    <Title resid="btnLogin.Label"/>
+                    <Description resid="btnLogin.Tooltip"/>
                   </Supertip>
                   <Icon>
                     <bt:Image size="16" resid="Icon.16x16"/>
@@ -50,16 +61,109 @@
                     <bt:Image size="80" resid="Icon.80x80"/>
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>ButtonId1</TaskpaneId>
+                    <TaskpaneId>TaskpaneLogin</TaskpaneId>
                     <SourceLocation resid="Taskpane.Url"/>
                   </Action>
                 </Control>
+                
+                <!-- Button 2: DDQ Assistant -->
+                <Control xsi:type="Button" id="btnDDQ">
+                  <Label resid="btnDDQ.Label"/>
+                  <Supertip>
+                    <Title resid="btnDDQ.Label"/>
+                    <Description resid="btnDDQ.Tooltip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16"/>
+                    <bt:Image size="32" resid="Icon.32x32"/>
+                    <bt:Image size="80" resid="Icon.80x80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>TaskpaneDDQ</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url"/>
+                  </Action>
+                </Control>
+
+                <!-- Button 3: Explain Sheet -->
+                <Control xsi:type="Button" id="btnExplain">
+                  <Label resid="btnExplain.Label"/>
+                  <Supertip>
+                    <Title resid="btnExplain.Label"/>
+                    <Description resid="btnExplain.Tooltip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16"/>
+                    <bt:Image size="32" resid="Icon.32x32"/>
+                    <bt:Image size="80" resid="Icon.80x80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>TaskpaneExplain</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url"/>
+                  </Action>
+                </Control>
+
+                <!-- Button 4: Summarize Selection -->
+                <Control xsi:type="Button" id="btnSummarize">
+                  <Label resid="btnSummarize.Label"/>
+                  <Supertip>
+                    <Title resid="btnSummarize.Label"/>
+                    <Description resid="btnSummarize.Tooltip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16"/>
+                    <bt:Image size="32" resid="Icon.32x32"/>
+                    <bt:Image size="80" resid="Icon.80x80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>TaskpaneSummarize</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url"/>
+                  </Action>
+                </Control>
+
+                <!-- Button 5: Insert Narrative/Table -->
+                <Control xsi:type="Button" id="btnInsert">
+                  <Label resid="btnInsert.Label"/>
+                  <Supertip>
+                    <Title resid="btnInsert.Label"/>
+                    <Description resid="btnInsert.Tooltip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16"/>
+                    <bt:Image size="32" resid="Icon.32x32"/>
+                    <bt:Image size="80" resid="Icon.80x80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>TaskpaneInsert</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url"/>
+                  </Action>
+                </Control>
+
+                <!-- Button 6: Settings -->
+                <Control xsi:type="Button" id="btnSettings">
+                  <Label resid="btnSettings.Label"/>
+                  <Supertip>
+                    <Title resid="btnSettings.Label"/>
+                    <Description resid="btnSettings.Tooltip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16"/>
+                    <bt:Image size="32" resid="Icon.32x32"/>
+                    <bt:Image size="80" resid="Icon.80x80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>TaskpaneSettings</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url"/>
+                  </Action>
+                </Control>
+
               </Group>
-            </OfficeTab>
+            </CustomTab>
+
           </ExtensionPoint>
         </DesktopFormFactor>
       </Host>
     </Hosts>
+
     <Resources>
       <bt:Images>
         <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3000/assets/Ana_logo.png"/>
@@ -73,12 +177,24 @@
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Get started with your sample add-in!"/>
-        <bt:String id="CommandsGroup.Label" DefaultValue="Commands Group"/>
-        <bt:String id="TaskpaneButton.Label" DefaultValue="Ana Excel Assistant"/>
+        <bt:String id="AnoreTab.Label" DefaultValue="Anore"/>
+        <bt:String id="AnoreGroup.Label" DefaultValue="AI Tools"/>
+
+        <bt:String id="btnLogin.Label" DefaultValue="Login / Connect"/>
+        <bt:String id="btnDDQ.Label" DefaultValue="DDQ Assistant"/>
+        <bt:String id="btnExplain.Label" DefaultValue="Explain Sheet"/>
+        <bt:String id="btnSummarize.Label" DefaultValue="Summarize Selection"/>
+        <bt:String id="btnInsert.Label" DefaultValue="Insert Narrative/Table"/>
+        <bt:String id="btnSettings.Label" DefaultValue="Settings"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="Your sample add-in loaded successfully. Go to the HOME tab and click the 'Show Task Pane' button to get started."/>
-        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Click to Show a Taskpane"/>
+        <bt:String id="GetStarted.Description" DefaultValue="Your sample add-in loaded successfully. Go to the Anore tab and click a button to get started."/>
+        <bt:String id="btnLogin.Tooltip" DefaultValue="Connect your account"/>
+        <bt:String id="btnDDQ.Tooltip" DefaultValue="AI-powered DDQ assistance"/>
+        <bt:String id="btnExplain.Tooltip" DefaultValue="AI explains your Excel sheet"/>
+        <bt:String id="btnSummarize.Tooltip" DefaultValue="Summarize selected cells using AI"/>
+        <bt:String id="btnInsert.Tooltip" DefaultValue="Insert AI-generated narrative or table"/>
+        <bt:String id="btnSettings.Tooltip" DefaultValue="Adjust your add-in settings"/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
