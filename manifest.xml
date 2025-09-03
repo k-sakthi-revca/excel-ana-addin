@@ -9,7 +9,7 @@
   <Version>1.0.0.0</Version>
   <ProviderName>Contoso</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Ana Excel Assistant"/>
+  <DisplayName DefaultValue="AnCore"/>
   <Description DefaultValue="A template to get started."/>
   <IconUrl DefaultValue="https://localhost:3000/assets/Ana_logo.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/Ana_logo.png"/>
@@ -37,11 +37,11 @@
           <FunctionFile resid="Commands.Url"/>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
 
-            <!-- Custom Tab for Anore -->
-            <CustomTab id="AnoreTab">
-              <Label resid="AnoreTab.Label"/>
-              <Group id="AnoreGroup" label="AI Tools">
-                <Label resid="AnoreGroup.Label"/>
+            <!-- Custom Tab for AnCore -->
+            <CustomTab id="AnCoreTab">
+              <Label resid="AnCoreTab.Label"/>
+              <Group id="AnCoreGroup" label="AI Tools">
+                <Label resid="AnCoreGroup.Label"/>
                 <Icon>
                   <bt:Image size="16" resid="Icon.16x16"/>
                   <bt:Image size="32" resid="Icon.32x32"/>
@@ -177,8 +177,8 @@
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Get started with your sample add-in!"/>
-        <bt:String id="AnoreTab.Label" DefaultValue="Anore"/>
-        <bt:String id="AnoreGroup.Label" DefaultValue="AI Tools"/>
+        <bt:String id="AnCoreTab.Label" DefaultValue="AnCore"/>
+        <bt:String id="AnCoreGroup.Label" DefaultValue="AI Tools"/>
 
         <bt:String id="btnLogin.Label" DefaultValue="Login / Connect"/>
         <bt:String id="btnDDQ.Label" DefaultValue="DDQ Assistant"/>
@@ -188,7 +188,7 @@
         <bt:String id="btnSettings.Label" DefaultValue="Settings"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="Your sample add-in loaded successfully. Go to the Anore tab and click a button to get started."/>
+        <bt:String id="GetStarted.Description" DefaultValue="Your sample add-in loaded successfully. Go to the AnCore tab and click a button to get started."/>
         <bt:String id="btnLogin.Tooltip" DefaultValue="Connect your account"/>
         <bt:String id="btnDDQ.Tooltip" DefaultValue="AI-powered DDQ assistance"/>
         <bt:String id="btnExplain.Tooltip" DefaultValue="AI explains your Excel sheet"/>
