@@ -58,7 +58,10 @@ const useStyles = makeStyles({
     },
     ":focus": {
       outline: "none",
-      borderColor: tokens.colorBrandBackground,
+      borderTopColor: tokens.colorBrandBackground,
+      borderRightColor: tokens.colorBrandBackground,
+      borderBottomColor: tokens.colorBrandBackground,
+      borderLeftColor: tokens.colorBrandBackground,
       boxShadow: `0 0 0 3px ${tokens.colorBrandBackgroundAlpha30}`,
     },
   },
