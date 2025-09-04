@@ -61,11 +61,22 @@ const App = (props) => {
       }
       
       // Get taskpane ID from Office context
-      if (Office && Office.context && Office.context.ui) {
+      if (Office && Office.context) {
         // In a real implementation, we would get the taskpaneId from Office context
         // For mock purposes, we'll extract it from the URL if available
         const urlParams = new URLSearchParams(window.location.search);
-        const taskpaneId = urlParams.get("taskpaneId") || "default";
+        let taskpaneId = urlParams.get("taskpaneId");
+        
+        // If no taskpaneId in URL, check if we can determine it from the ribbon button that was clicked
+        if (!taskpaneId && Office.context.ribbon) {
+          // This is a mock implementation - in a real add-in, you would use the Office JS API
+          // to get information about which ribbon button was clicked
+          console.log("Checking ribbon context...");
+        }
+        
+        // If we still don't have a taskpaneId, use the default
+        taskpaneId = taskpaneId || "default";
+        console.log("Setting taskpaneId:", taskpaneId);
         setCurrentTaskpane(taskpaneId);
       }
       

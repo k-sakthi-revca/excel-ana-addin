@@ -39,11 +39,15 @@ const AIAssistance = ({ initialTask }) => {
   const [insertionResult, setInsertionResult] = useState(null);
   const [selectionData, setSelectionData] = useState(null);
   const [sheetData, setSheetData] = useState(null);
+  
+  // Console log for debugging
+  console.log("AIAssistance initialTask:", initialTask);
 
   // Initialize based on initialTask
   useEffect(() => {
     const initializeTask = async () => {
       if (initialTask) {
+        console.log("Initializing task:", initialTask);
         setTask(initialTask);
         
         // Reset states when changing tasks
