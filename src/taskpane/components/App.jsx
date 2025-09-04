@@ -6,9 +6,11 @@ import HeroList from "./HeroList";
 import TextInsertion from "./TextInsertion";
 import { makeStyles } from "@fluentui/react-components";
 import { Ribbon24Regular, LockOpen24Regular, DesignIdeas24Regular } from "@fluentui/react-icons";
+import { Spinner } from "@fluentui/react-components";
 import { insertText } from "../taskpane";
 import AIAssistance from "./AIAssistance/index";
 import Login from "./Login";
+import Settings from "./Settings";
 import { loginApi } from "../mockApi";
 const useStyles = makeStyles({
   root: {
@@ -88,7 +90,9 @@ const App = (props) => {
 
   // If still loading, show a simple loading state
   if (isLoading) {
-    return <div className={styles.root}>Loading...</div>;
+    return <div style={{ minHeight:"100vh", display: "flex", justifyContent: "center", padding: "20px" }}>
+      <Spinner size="extra-large" />
+    </div>
   }
 
   // If not authenticated and not on the login taskpane, redirect to login
@@ -115,14 +119,7 @@ const App = (props) => {
         return <AIAssistance initialTask="Insert" />;
       
       case "TaskpaneSettings":
-        return (
-          <div className={styles.root}>
-            <Header logo="assets/logo-filled.png" title="Settings" message="Configure your preferences" />
-            <div style={{ padding: "20px" }}>
-              <p>Settings functionality would be implemented here.</p>
-            </div>
-          </div>
-        );
+        return <Settings />;
       
       default:
         return <AIAssistance />;

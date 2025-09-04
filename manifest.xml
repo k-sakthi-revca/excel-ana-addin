@@ -152,7 +152,7 @@
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
                     <TaskpaneId>TaskpaneSettings</TaskpaneId>
-                    <SourceLocation resid="Taskpane.Url"/>
+                    <SourceLocation resid="Taskpane.Url.Settings"/>
                   </Action>
                 </Control>
 
@@ -196,6 +196,7 @@
         <bt:Url id="Taskpane.Url.Explain" DefaultValue="https://localhost:3000/taskpane.html?taskpaneId=TaskpaneExplain"/>
         <bt:Url id="Taskpane.Url.Summarize" DefaultValue="https://localhost:3000/taskpane.html?taskpaneId=TaskpaneSummarize"/>
         <bt:Url id="Taskpane.Url.Insert" DefaultValue="https://localhost:3000/taskpane.html?taskpaneId=TaskpaneInsert"/>
+        <bt:Url id="Taskpane.Url.Settings" DefaultValue="https://localhost:3000/taskpane.html?taskpaneId=TaskpaneSettings"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Get started with your sample add-in!"/>
