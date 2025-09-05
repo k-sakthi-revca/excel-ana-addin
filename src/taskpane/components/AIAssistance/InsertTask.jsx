@@ -6,8 +6,19 @@ import {
   Input,
   Spinner,
   Text,
+  Toast,
+  ToastTitle,
+  useToastController,
 } from "@fluentui/react-components";
 import { useStyles } from "./styles";
+import {
+  insertNarrativeInCurrentSheet,
+  insertNarrativeInNewSheet,
+  insertTableInCurrentSheet,
+  insertTableInNewSheet,
+  copyToClipboard,
+  formatTableForClipboard
+} from "../../excelInsertionUtils";
 
 const InsertTask = ({
   prompt,
@@ -21,6 +32,16 @@ const InsertTask = ({
   insertionResult
 }) => {
   const styles = useStyles();
+  const { dispatchToast } = useToastController();
+  
+  const showNotification = (message) => {
+    dispatchToast(
+      <Toast>
+        <ToastTitle>{message}</ToastTitle>
+      </Toast>,
+      { position: "top-end" }
+    );
+  };
 
   return (
     <div className={styles.section}>
@@ -133,9 +154,59 @@ const InsertTask = ({
             
             <Button 
               className={styles.insertButton}
-              onClick={() => {
-                // In a real implementation, this would insert the content into Excel
-                alert(`Content would be inserted into ${outputTarget}`);
+              onClick={async () => {
+                try {
+                  let result;
+                  
+                  // Handle different insertion targets based on content type
+                  if (insertionResult.type === "narrative") {
+                    const narrativeText = insertionResult.data.narrative;
+                    
+                    if (outputTarget === "currentSheet") {
+                      result = await insertNarrativeInCurrentSheet(narrativeText);
+                      if (result.success) {
+                        showNotification("Narrative inserted into current sheet successfully");
+                      }
+                    } else if (outputTarget === "newSheet") {
+                      result = await insertNarrativeInNewSheet(narrativeText);
+                      if (result.success) {
+                        showNotification("Narrative inserted into new sheet successfully");
+                      }
+                    } else if (outputTarget === "clipboard") {
+                      result = await copyToClipboard(narrativeText);
+                      if (result.success) {
+                        showNotification("Narrative copied to clipboard successfully");
+                      }
+                    }
+                  } else if (insertionResult.type === "table") {
+                    const tableData = insertionResult.data.tableData;
+                    
+                    if (outputTarget === "currentSheet") {
+                      result = await insertTableInCurrentSheet(tableData);
+                      if (result.success) {
+                        showNotification("Table inserted into current sheet successfully");
+                      }
+                    } else if (outputTarget === "newSheet") {
+                      result = await insertTableInNewSheet(tableData);
+                      if (result.success) {
+                        showNotification("Table inserted into new sheet successfully");
+                      }
+                    } else if (outputTarget === "clipboard") {
+                      const formattedTable = formatTableForClipboard(tableData);
+                      result = await copyToClipboard(formattedTable);
+                      if (result.success) {
+                        showNotification("Table copied to clipboard successfully");
+                      }
+                    }
+                  }
+                  
+                  if (!result || !result.success) {
+                    showNotification("Failed to insert content. Please try again.");
+                  }
+                } catch (error) {
+                  console.error("Error inserting content:", error);
+                  showNotification("Failed to insert content: " + error.message);
+                }
               }}
             >
               Insert into {outputTarget === "currentSheet" ? "Current Sheet" : 

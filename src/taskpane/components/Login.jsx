@@ -168,7 +168,8 @@ const Login = ({ setIsAuthenticated, setIsSignUp }) => {
   const handleGoogleSignIn = (e) => {
     e.preventDefault();
     // Google sign-in implementation would go here
-    alert("Google sign-in would be implemented here");
+    console.log("Google sign-in would be implemented here");
+    // Note: alert() is not supported in Office Add-ins
   };
 
   return (
