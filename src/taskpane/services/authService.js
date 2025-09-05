@@ -127,7 +127,7 @@ class AuthService {
   static async logout() {
     try {
       // Call the logout API
-      await fetch(`${LOGIN_API_BASE_URL}/user/logout`, {
+      await fetch(`${LOGIN_API_BASE_URL}/v2/auth/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
