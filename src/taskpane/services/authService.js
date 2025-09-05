@@ -1,4 +1,5 @@
 import tokenManager from '../utils/tokenManager';
+import authStateManager from '../utils/authStateManager';
 import { CSRFManager, SecurityManager, InputSanitizer } from '../utils/security';
 import { encryptData, decryptData } from '../utils/crypto';
 import axios from 'axios';
@@ -82,12 +83,15 @@ class AuthService {
         // Use user data directly from the response
         tokenManager.setUserData(userData);
         
-        // Store authentication state in localStorage
+        // Store authentication state in localStorage and broadcast to other tabs
         localStorage.setItem('anaUserAuthenticated', 'true');
         localStorage.setItem('anaUserEmail', sanitizedEmail);
         
         // Store encrypted user data for persistence
         localStorage.setItem('anaUserData', encryptData(userData));
+        
+        // Broadcast authentication state to all tabs
+        authStateManager.broadcastAuthState(true);
         
         // Set user_id cookie like the working frontend
         document.cookie = `user_id=${userData.user_id}; path=/; secure; samesite=strict`;
@@ -166,6 +170,9 @@ class AuthService {
     document.cookie.split(";").forEach(function(c) {
       document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
+    
+    // Broadcast logout to all tabs
+    authStateManager.broadcastAuthState(false);
   }
 
   /**
@@ -173,7 +180,7 @@ class AuthService {
    * @returns {boolean} - True if authenticated
    */
   static isAuthenticated() {
-    return tokenManager.isAuthenticated() || localStorage.getItem('anaUserAuthenticated') === 'true';
+    return tokenManager.isAuthenticated() || authStateManager.isAuthenticated();
   }
 
   /**

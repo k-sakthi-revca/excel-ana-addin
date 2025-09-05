@@ -1,5 +1,6 @@
 import axios from 'axios';
 import tokenManager from '../utils/tokenManager';
+import authStateManager from '../utils/authStateManager';
 
 // Use environment variables with fallback values
 const MONITOR_API_ENDPOINT = 'https://monitor.openana.ai';
@@ -43,6 +44,9 @@ monitorApi.interceptors.response.use(
     tokenManager.clearAll();
     localStorage.removeItem('anaUserAuthenticated');
     localStorage.removeItem('anaUserEmail');
+    
+    // Broadcast logout to all tabs
+    authStateManager.broadcastAuthState(false);
     
     // Reload the page to redirect to login
     window.location.reload();

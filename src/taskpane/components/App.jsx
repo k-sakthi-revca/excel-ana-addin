@@ -12,6 +12,8 @@ import AIAssistance from "./AIAssistance/index";
 import Login from "./Login";
 import Settings from "./Settings";
 import AuthService from "../services/authService";
+import authStateManager from "../utils/authStateManager";
+
 const useStyles = makeStyles({
   root: {
     minHeight: "100vh",
@@ -78,6 +80,17 @@ const App = (props) => {
     };
     
     checkAuth();
+    
+    // Add listener for authentication state changes
+    const removeListener = authStateManager.addListener((isAuthenticated) => {
+      console.log("Auth state changed:", isAuthenticated);
+      setIsAuthenticated(isAuthenticated);
+    });
+    
+    // Clean up listener on unmount
+    return () => {
+      removeListener();
+    };
   }, []);
 
   // If still loading, show a simple loading state

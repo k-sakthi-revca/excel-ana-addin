@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import AuthService from "../services/authService";
+import authStateManager from "../utils/authStateManager";
 import { 
   Button, 
   Input,
@@ -165,6 +166,8 @@ const Login = ({ setIsAuthenticated, setIsSignUp }) => {
       if (result.success) {
         console.log("Login successful");
         setIsAuthenticated(true);
+        // Broadcast authentication state to all tabs
+        authStateManager.broadcastAuthState(true);
       } else {
         setError("Login failed. Please try again.");
       }
