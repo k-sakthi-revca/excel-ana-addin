@@ -11,7 +11,7 @@ import { insertText } from "../taskpane";
 import AIAssistance from "./AIAssistance/index";
 import Login from "./Login";
 import Settings from "./Settings";
-import { loginApi } from "../mockApi";
+import AuthService from "../services/authService";
 const useStyles = makeStyles({
   root: {
     minHeight: "100vh",
@@ -46,20 +46,12 @@ const App = (props) => {
   // Check for authentication and get taskpane ID on component mount
   useEffect(() => {
     const checkAuth = async () => {
-      // Check if user is authenticated from localStorage
-      const storedAuth = localStorage.getItem("anaUserAuthenticated");
-      if (storedAuth === "true") {
-        // Validate token with mock API
-        const email = localStorage.getItem("anaUserEmail");
-        try {
-          const result = await loginApi.validateToken("mock-token");
-          if (result.valid) {
-            setIsAuthenticated(true);
-          }
-        } catch (error) {
-          console.error("Token validation failed:", error);
-          localStorage.removeItem("anaUserAuthenticated");
-        }
+      // Check if user is authenticated
+      if (AuthService.isAuthenticated()) {
+        // Get user data
+        const userData = AuthService.getCurrentUser();
+        console.log("User authenticated:", userData);
+        setIsAuthenticated(true);
       }
       
       // Get taskpane ID from Office context

@@ -18,6 +18,7 @@ import {
   SignOut24Regular
 } from "@fluentui/react-icons";
 import Header from "./Header";
+import AuthService from "../services/authService";
 
 // Create styles for the Settings component
 const useStyles = makeStyles({
@@ -147,7 +148,7 @@ const Settings = () => {
     type: "success" // or "error"
   });
   
-  // Load settings and user info from localStorage on component mount
+  // Load settings and user info on component mount
   useEffect(() => {
     // Load settings
     const savedSettings = localStorage.getItem("anaSettings");
@@ -159,20 +160,39 @@ const Settings = () => {
       }
     }
     
-    // Load user info
-    const userEmail = localStorage.getItem("anaUserEmail");
-    if (userEmail) {
-      // In a real app, you might fetch user details from an API
-      // For now, we'll just use the email and generate a name
-      const name = userEmail.split('@')[0]
-        .split('.')
-        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(' ');
+    // Load user info from AuthService
+    const userData = AuthService.getCurrentUser();
+    if (userData) {
+      // Get user info from userData
+      const email = userData.email || localStorage.getItem("anaUserEmail");
+      
+      // Generate a name if not available in userData
+      let name = userData.name || userData.full_name;
+      if (!name && email) {
+        name = email.split('@')[0]
+          .split('.')
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(' ');
+      }
       
       setUserInfo({
         name,
-        email: userEmail
+        email
       });
+    } else {
+      // Fallback to localStorage
+      const userEmail = localStorage.getItem("anaUserEmail");
+      if (userEmail) {
+        const name = userEmail.split('@')[0]
+          .split('.')
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(' ');
+        
+        setUserInfo({
+          name,
+          email: userEmail
+        });
+      }
     }
   }, []);
   
@@ -196,20 +216,24 @@ const Settings = () => {
   };
   
   // Handle logout
-  const handleLogout = () => {
-    // Clear authentication data
-    localStorage.removeItem("anaUserAuthenticated");
-    localStorage.removeItem("anaUserEmail");
-    
-    // Show notification
-    showNotification("You have been logged out successfully", "success");
-    
-    // Redirect to login page (in a real app, you might use a router)
-    // For now, we'll just reload the page which should redirect to login
-    // based on the App component logic
-    setTimeout(() => {
-      window.location.reload();
-    }, 1500);
+  const handleLogout = async () => {
+    try {
+      // Show notification first for better UX
+      showNotification("Logging out...", "success");
+      
+      // Call the AuthService logout method
+      await AuthService.logout();
+      
+      // Redirect to login page (in a real app, you might use a router)
+      // For now, we'll just reload the page which should redirect to login
+      // based on the App component logic
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      console.error("Logout error:", error);
+      showNotification("Failed to logout. Please try again.", "error");
+    }
   };
   
   // Show notification
